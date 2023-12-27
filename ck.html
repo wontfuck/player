@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Base64 to Hex Conversion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+    }
+
+    button {
+      display: block;
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background-color: #f5f5f5;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    .copy-button-green {
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+  <script>
+    function convertBase64ToHex() {
+      var inputData = document.getElementById("inputData").value;
+      var data = JSON.parse(inputData);
+
+      var output = '';
+      for (var i = 0; i < data.keys.length; i++) {
+        if (data.keys[i].k) {
+          var kidHex = b64ToHex(data.keys[i].kid);
+          var kHex = b64ToHex(data.keys[i].k);
+          output += kidHex + ':' + kHex;
+        }
+      }
+
+      document.getElementById("output").innerHTML = output;
+      document.getElementById("copyButton").classList.remove("copy-button-green");
+    }
+
+    function copyOutput() {
+      var outputText = document.getElementById("output").innerText;
+      var tempElement = document.createElement("textarea");
+      tempElement.value = outputText;
+      document.body.appendChild(tempElement);
+      tempElement.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempElement);
+      document.getElementById("copyButton").classList.add("copy-button-green");
+    }
+
+    function b64ToHex(base64) {
+      var bytes = atob(base64);
+      var hex = '';
+      for (var i = 0; i < bytes.length; i++) {
+        var charCode = bytes.charCodeAt(i).toString(16);
+        hex += charCode.length === 1 ? '0' + charCode : charCode;
+      }
+      return hex;
+    }
+    
+    function pasteInput() {
+      navigator.clipboard.readText()
+        .then(text => {
+          document.getElementById("inputData").value = text;
+        })
+        .catch(err => {
+          console.error('Failed to read clipboard contents: ', err);
+        });
+    }
+  </script>
+</head>
+<body>
+  <h1>Base64 to Hex ClearKey Conversion</h1>
+  <div>
+    <label for="inputData">Input Data:</label>
+    <textarea id="inputData" rows="5" placeholder="Masukan Full Base64 Clearkeymu"></textarea>
+  </div>
+  <button onclick="pasteInput()">Paste</button>
+  <button onclick="convertBase64ToHex()">Convert</button>
+  <pre id="output"></pre>
+  <button id="copyButton" onclick="copyOutput()">Copy Output</button>
+  <button onclick="reloadPage()">Reload</button> <!-- New reload button -->
+  <script>
+    function reloadPage() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
